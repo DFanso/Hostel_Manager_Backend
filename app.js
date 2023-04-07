@@ -8,9 +8,15 @@ const app = express();
 app.use(express.json());
 
 mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Database connected successfully.');
+  })
+  .catch((err) => {
+    console.error('Database connection error:', err);
+  });
 
 app.use('/api/students', studentRoutes);
 app.use('/api/parents', parentRoutes);
