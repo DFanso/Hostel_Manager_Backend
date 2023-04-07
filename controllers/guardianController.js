@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const Guardian = require("../models/guardianModel");
+const { JWT_SECRET } = require('../config/env');
 
 exports.registerGuardian = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ exports.registerGuardian = async (req, res) => {
       return res.status(400).json({ message: "Guardian with this email already exists." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, JWT_SECRET);
 
     const newGuardian = new Guardian({
       username,
