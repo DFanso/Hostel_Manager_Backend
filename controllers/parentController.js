@@ -36,7 +36,7 @@ exports.register = async (req, res) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    const parentData = { ...req.body, studentId: student._id }; // Update this line
+    const parentData = { ...req.body, studentId: student._id };
     const parent = new Parent(parentData);
     await parent.save();
     res.status(201).json({ message: 'Parent registration successful', parent });

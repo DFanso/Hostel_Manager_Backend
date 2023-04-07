@@ -8,6 +8,8 @@ const studentSchema = new mongoose.Schema({
   roomNo: { type: String, required: false },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }]
+
 });
 
 studentSchema.pre('save', async function (next) {
