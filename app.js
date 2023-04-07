@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const studentRoutes = require('./routes/studentRoutes');
 const parentRoutes = require('./routes/parentRoutes');
+
 const { MONGODB_URI } = require('./config/env');
 
 const app = express();
@@ -16,7 +17,7 @@ mongoose.connect(MONGODB_URI, {
   })
   .catch((err) => {
     console.error('Database connection error:', err);
-  });
+});
 
 app.use('/api/students', studentRoutes);
 app.use('/api/parents', parentRoutes);
