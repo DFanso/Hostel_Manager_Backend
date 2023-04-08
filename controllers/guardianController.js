@@ -11,7 +11,7 @@ exports.registerGuardian = async (req, res) => {
       return res.status(400).json({ message: "Guardian with this email already exists." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, JWT_SECRET);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newGuardian = new Guardian({
       username,
