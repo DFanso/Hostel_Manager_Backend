@@ -6,7 +6,7 @@ const parentSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
+  studentId: { type: String, required: true },
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }]
 
 

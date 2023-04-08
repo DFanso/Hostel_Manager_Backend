@@ -11,7 +11,7 @@ exports.payFees = (req, res) => {
 exports.studentLogin = async (req, res) => {
     try {
       console.log('Login request received'); // Add this line
-      const { email, password } = req.body;
+      const { email, password,studentId } = req.body;
       const student = await Student.findOne({ email });
   
       if (!student) {
@@ -27,7 +27,7 @@ exports.studentLogin = async (req, res) => {
   
       const token = jwt.sign({ _id: student._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       console.log('Login successful'); // Add this line
-      res.status(200).json({ message: 'Login successful', token });
+      res.status(200).json({ message: 'Login successful', token ,studentId: student.studentId});
     } catch (error) {
       console.error('Login failed:', error); // Add this line
       res.status(500).json({ message: 'Login failed', error });
