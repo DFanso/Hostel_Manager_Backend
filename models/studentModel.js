@@ -9,6 +9,7 @@ const studentSchema = new mongoose.Schema({
   studentId: { type: String, required: true, unique: true },
   studentNo: { type: String, required: true, unique: true, default: shortid.generate },
   roomNo: { type: String, required: false },
+  address: { type: String, required: false },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }]

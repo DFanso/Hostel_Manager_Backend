@@ -1,21 +1,51 @@
 const Payment = require('../models/paymentModel');
 const Student = require('../models/studentModel');
+const Parent = require('../models/parentModel');
 const jwt = require('jsonwebtoken');
 
 exports.createPayment = async (req, res) => {
   try {
-    const { studentId, payerType, amount, month } = req.body;
+    const { payerType, amount, month } = req.body;
     const year = new Date().getFullYear(); // Get the current year from the system
+
+    // Extract JWT token and decode it
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decodedToken.id;
+
+    let studentId;
+
+    if (payerType === 'parent') {
+      
+      const parent = await Parent.findById(userId);
+
+      if (!parent) {
+        return res.status(404).json({ message: 'Parent not found' });
+      }
+      studentId = parent.studentId;
+      
+    } else if (payerType === 'student') {
+      const student = await Student.findById(userId);
+      if (!student) {
+        return res.status(404).json({ message: 'Student not found' });
+      }
+      studentId = student.studentId;
+    } else {
+      return res.status(400).json({ message: 'Invalid payer type' });
+    }
+
     const student = await Student.findOne({ studentId });
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
+
     const existingPayment = await Payment.findOne({ studentId, month, year });
     if (existingPayment) {
       existingPayment.amount += amount;
       await existingPayment.save();
       return res.status(200).json({ message: 'Payment updated successfully', payment: existingPayment });
     }
+    
     const payment = new Payment({ studentId, payerType, amount, month, year });
     await payment.save();
     res.status(201).json({ message: 'Payment created successfully', payment });

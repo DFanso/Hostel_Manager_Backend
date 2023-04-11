@@ -21,7 +21,7 @@ exports.parentLogin = async (req, res) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
-    res.status(200).json({ message: 'Login successful', token, studentId: parent.studentId });
+    res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
     console.error('Login failed:', error);
     res.status(500).json({ message: 'Login failed', error });
