@@ -12,20 +12,22 @@ exports.createPayment = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decodedToken.id;
+    const stId = decodedToken._id;
+
 
     let studentId;
 
     if (payerType === 'parent') {
-      
+
       const parent = await Parent.findById(userId);
 
       if (!parent) {
         return res.status(404).json({ message: 'Parent not found' });
       }
       studentId = parent.studentId;
-      
+
     } else if (payerType === 'student') {
-      const student = await Student.findById(userId);
+      const student = await Student.findById(stId);
       if (!student) {
         return res.status(404).json({ message: 'Student not found' });
       }
@@ -48,7 +50,7 @@ exports.createPayment = async (req, res) => {
         payment: existingPayment,
       });
     }
-    
+
     const payment = new Payment({ studentId, payerType, amount, month, year });
     await payment.save();
     res.status(201).json({ message: "Payment created successfully", payment });
