@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const studentController = require("../controllers/studentController");
-const scanQRController = require("../controllers/scanQRController");
+const scanQRController = require("../controllers/AttendanceController");
 router.get(
   "/allStudentAttendance",
   scanQRController.getAllAttendanceOfStudents
