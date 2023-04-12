@@ -59,7 +59,7 @@ exports.createPayment = async (req, res) => {
       }
       studentId = parent.studentId;
     } else if (payerType === "student") {
-      const student = await Student.findById(userId);
+      const student = await Student.findById(stId);
       if (!student) {
         return res.status(404).json({ message: "!!Student not found" });
       }
