@@ -93,3 +93,42 @@ exports.getAttendanceStudentID = async (req, res) => {
     res.status(400).json({ message: "Attendance retrieval failed", error });
   }
 };
+
+exports.getAllAttendanceOfStudents = async (req, res) => {
+  try {
+    const dataCount = parseInt(req.query.dataCount);
+    const token = req.headers.authorization.split(" ")[1];
+    const secretKey = process.env.JWT_SECRET;
+
+    jwt.verify(token, secretKey, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      } else {
+        // Calculate skip count for pagination
+        const skipCount = (dataCount - 1) * 10;
+
+        // Retrieve all attendance records
+        const attendanceRecords = await Attendance.find({})
+          .sort({ timestamp: -1 }) // Sort by descending timestamp to get the latest records first
+          .skip(skipCount)
+          .limit(10);
+
+        const totalRecords = await Attendance.countDocuments({});
+
+        if (attendanceRecords.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No attendance records found" });
+        }
+
+        res.status(200).json({
+          message: "Attendance records retrieved successfully",
+          totalRecords,
+          attendanceRecords,
+        });
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ message: "Attendance retrieval failed", error });
+  }
+};

@@ -9,4 +9,6 @@ router.post("/login", guardianController.loginGuardian);
 router.get("/CreateQRCode", createQRController.generateQRCode);
 router.post("/scanQR", scanQRController.scanQR);
 
+router.post("/changeStudentRoom", guardianController.changeStudentRoom);
+
 module.exports = router;

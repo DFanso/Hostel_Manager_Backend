@@ -1,5 +1,8 @@
 const bcrypt = require("bcryptjs");
+
 const Guardian = require("../models/guardianModel");
+const Student = require("../models/studentModel");
+
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/env");
 
@@ -57,5 +60,42 @@ exports.loginGuardian = async (req, res) => {
       message: "An error occurred while logging in the guardian",
       error: err,
     });
+  }
+};
+
+exports.changeStudentRoom = async (req, res) => {
+  try {
+    const { studentId, roomNo } = req.body;
+
+    const token = req.headers.authorization.split(" ")[1];
+    const secretKey = process.env.JWT_SECRET;
+
+    jwt.verify(token, secretKey, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      } else {
+        // Find the student by studentId
+        const student = await Student.findOne({ studentId });
+
+        if (!student) {
+          return res
+            .status(404)
+            .json({ message: "Student with this studentId not found" });
+        }
+
+        // Update roomNo and save the student
+        student.roomNo = roomNo;
+        await student.save();
+
+        res.status(200).json({
+          message: "Student's roomNo updated successfully",
+          student,
+        });
+      }
+    });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Failed to update student's roomNo", error });
   }
 };

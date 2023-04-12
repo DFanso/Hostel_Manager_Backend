@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const studentController = require("../controllers/studentController");
 const scanQRController = require("../controllers/scanQRController");
-
+router.get(
+  "/allStudentAttendance",
+  scanQRController.getAllAttendanceOfStudents
+);
 router.post("/login", studentController.studentLogin);
 router.post("/payFees", studentController.payFees);
 router.post("/register", studentController.register);
