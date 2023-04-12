@@ -44,7 +44,7 @@ exports.scanQR = async (req, res) => {
 
         await markAttendance(userId, action, timestamp);
         // Run studentAttendance function
-        res.json({ message: "Attendance taken successfully" });
+        res.status(200).res.json({ message: "Attendance taken successfully" });
       } catch (err) {
         return res.status(401).json({ message: "Invalid QR token" });
       }
