@@ -10,5 +10,6 @@ router.post("/login", studentController.studentLogin);
 router.post("/payFees", studentController.payFees);
 router.post("/register", studentController.register);
 router.get("/:studentId", scanQRController.getAttendanceStudentID);
+router.get("/parent/:parentId", scanQRController.getAttendanceByParentID);
 
 module.exports = router;

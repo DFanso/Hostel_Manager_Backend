@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const Attendance = require("../models/attendanceModel.js");
+const Attendance = require("../models/attendanceModel");
+const Parent = require("../models/parentModel");
+const Student = require("../models/studentModel");
 
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET;
@@ -110,6 +112,68 @@ exports.getAttendanceStudentID = async (req, res) => {
           message: "Attendance records retrieved successfully",
           totalRecords,
           attendanceRecords,
+        });
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ message: "Attendance retrieval failed", error });
+  }
+};
+
+exports.getAttendanceByParentID = async (req, res) => {
+  console.log("Hit getAttendanceByParentID");
+  try {
+    const { parentId } = req.params;
+    const dataCount = parseInt(req.query.dataCount);
+    const token = req.headers.authorization.split(" ")[1];
+    const secretKey = process.env.JWT_SECRET;
+
+    jwt.verify(token, secretKey, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      } else {
+        // Retrieve parent by ID
+        const parent = await Parent.findById(parentId);
+
+        if (!parent) {
+          return res.status(404).json({ message: "Parent not found" });
+        }
+
+        // Retrieve the student ID from the parent model
+        const studentId = parent.studentId;
+
+        const student = await Student.findOne({ studentId: studentId });
+
+        if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+        }
+
+        const stId = student._id;
+
+        // Calculate skip count for pagination
+        const skipCount = (dataCount - 1) * 10;
+
+        // Retrieve attendance records for the specified student
+        const attendanceRecords = await Attendance.find({ userId: stId })
+          .sort({ timestamp: -1 }) // Sort by descending timestamp to get the latest records first
+          .skip(skipCount)
+          .limit(10);
+
+        const totalRecords = await Attendance.countDocuments({
+          userId: stId,
+        });
+
+        if (attendanceRecords.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No attendance records found for this student" });
+        }
+
+        res.status(200).json({
+          message: "Attendance records retrieved successfully",
+          totalRecords,
+          attendanceRecords,
+          studentId,
         });
       }
     });
