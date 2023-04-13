@@ -8,7 +8,7 @@ const attendanceSchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    enum: ["check-in", "check-out"],
+    enum: ["check-IN", "check-OUT"],
     required: true,
   },
   timestamp: {

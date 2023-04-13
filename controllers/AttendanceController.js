@@ -14,38 +14,62 @@ const markAttendance = async (userId, action, timestamp) => {
 };
 
 exports.scanQR = async (req, res) => {
-  const token = req.headers["token"];
+  console.log("Request body:", req.body);
+  const authHeader = req.headers["authorization"];
   const qrToken = req.body.qrToken;
   const secretKey = process.env.JWT_SECRET;
 
-  if (!token) {
+  if (!authHeader) {
+    console.log("Error: No token provided");
     return res.status(401).json({ message: "No token provided" });
   }
   if (!qrToken) {
+    console.log("Error: No QR token provided");
     return res.status(400).json({ message: "No QR token provided" });
   }
-  jwt.verify(token, secretKey, async (err, decoded) => {
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, secretKey, async (err, decodedToken) => {
+    console.log("Decoded token:", decodedToken);
     if (err) {
+      console.log("Error: Invalid or expired token");
+      console.log(err);
       return res
         .status(401)
         .json({ message: "Invalid or expired token", err: err });
     } else {
       try {
         // Check if header token is valid
-        const decoded = jwt.verify(qrToken, secretKey);
+        const decodedQR = jwt.verify(qrToken, secretKey);
         // Check if token is expired
         const now = new Date();
-        if (now > new Date(decoded.expiresIn)) {
+        if (now > new Date(decodedQR.expiresIn)) {
+          console.log("Error: QRToken has expired");
           return res.status(401).json({ message: "QRToken has expired" });
         }
-        const userId = req.body.userId;
-        const action = req.body.action;
-        const timestamp = req.body.timestamp;
+        const userId = decodedToken._id; // Extract the user ID from the decoded JWT
+        const action = req.body.buttonName;
+        const timestamp = req.body.timeStamp;
 
-        await markAttendance(userId, action, timestamp);
-        // Run studentAttendance function
-        res.status(200).res.json({ message: "Attendance taken successfully" });
+        console.log("User ID:", userId);
+        console.log("Action:", action);
+        console.log("Timestamp:", timestamp);
+
+        // Modify markAttendance to include timestamp
+        const newAttendance = new Attendance({
+          userId,
+          action,
+          timestamp, // Include the timestamp when creating a new Attendance instance
+        });
+
+        await newAttendance.save();
+        console.log("Attendance saved successfully");
+
+        res.status(200).json({ message: "Attendance taken successfully" });
       } catch (err) {
+        console.log("Error: Invalid QR token");
+        console.log(err);
         return res.status(401).json({ message: "Invalid QR token" });
       }
     }
