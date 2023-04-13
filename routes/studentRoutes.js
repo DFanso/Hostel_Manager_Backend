@@ -11,5 +11,9 @@ router.post("/payFees", studentController.payFees);
 router.post("/register", studentController.register);
 router.get("/:studentId", scanQRController.getAttendanceStudentID);
 router.get("/parent/:parentId", scanQRController.getAttendanceByParentID);
+router.get(
+  "/getStudentDetailsByStudentID/:studentId",
+  studentController.getStudentDetailsByStudentID
+);
 
 module.exports = router;
