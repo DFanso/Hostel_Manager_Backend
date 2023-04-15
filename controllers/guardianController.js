@@ -69,11 +69,12 @@ exports.changeStudentRoom = async (req, res) => {
 
     const token = req.headers.authorization.split(" ")[1];
     const secretKey = process.env.JWT_SECRET;
-
+    console.log("test2");
     jwt.verify(token, secretKey, async (err, decoded) => {
       if (err) {
         return res.status(401).json({ message: "Invalid or expired token" });
       } else {
+        console.log("test1");
         // Find the student by studentId
         const student = await Student.findOne({ studentId });
 
