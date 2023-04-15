@@ -6,15 +6,6 @@ const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET;
 
-const markAttendance = async (userId, action) => {
-  const newAttendance = new Attendance({
-    userId,
-    action,
-  });
-
-  await newAttendance.save();
-};
-
 exports.scanQR = async (req, res) => {
   console.log("Request body:", req.body);
   const authHeader = req.headers["authorization"];
@@ -50,12 +41,24 @@ exports.scanQR = async (req, res) => {
           console.log("Error: QRToken has expired");
           return res.status(401).json({ message: "QRToken has expired" });
         }
-        const userId = req.body.userId;
+        const userId = req.body.userId; // Extract the user ID from the decoded JWT
         const action = req.body.action;
-        console.log("test1");
-        await markAttendance(userId, action);
-        // Run studentAttendance function
-        console.log("test2");
+        const timestamp = req.body.timestamp;
+
+        console.log("User ID:", userId);
+        console.log("Action:", action);
+        console.log("Timestamp:", timestamp);
+
+        // Modify markAttendance to include timestamp
+        const newAttendance = new Attendance({
+          userId,
+          action,
+          timestamp, // Include the timestamp when creating a new Attendance instance
+        });
+
+        await newAttendance.save();
+        console.log("Attendance saved successfully");
+
         res.status(200).json({ message: "Attendance taken successfully" });
       } catch (err) {
         return res.status(401).json({ message: "Invalid QR token" });
@@ -89,7 +92,6 @@ exports.getAttendanceStudentID = async (req, res) => {
         });
 
         if (attendanceRecords.length === 0) {
-          console.log("No record");
           return res
             .status(404)
             .json({ message: "No attendance records found for this student" });
