@@ -6,15 +6,6 @@ const Student = require("../models/studentModel");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET;
 
-const markAttendance = async (userId, action, timestamp) => {
-  const newAttendance = new Attendance({
-    userId,
-    action,
-  });
-
-  await newAttendance.save();
-};
-
 exports.scanQR = async (req, res) => {
   console.log("Request body:", req.body);
   const authHeader = req.headers["authorization"];
@@ -50,9 +41,9 @@ exports.scanQR = async (req, res) => {
           console.log("Error: QRToken has expired");
           return res.status(401).json({ message: "QRToken has expired" });
         }
-        const userId = decodedToken._id; // Extract the user ID from the decoded JWT
-        const action = req.body.buttonName;
-        const timestamp = req.body.timeStamp;
+        const userId = req.body.userId; // Extract the user ID from the decoded JWT
+        const action = req.body.action;
+        const timestamp = req.body.timestamp;
 
         console.log("User ID:", userId);
         console.log("Action:", action);
@@ -70,8 +61,6 @@ exports.scanQR = async (req, res) => {
 
         res.status(200).json({ message: "Attendance taken successfully" });
       } catch (err) {
-        console.log("Error: Invalid QR token");
-        console.log(err);
         return res.status(401).json({ message: "Invalid QR token" });
       }
     }
