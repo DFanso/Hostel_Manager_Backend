@@ -80,17 +80,24 @@ exports.getAttendanceStudentID = async (req, res) => {
       if (err) {
         return res.status(401).json({ message: "Invalid or expired token" });
       } else {
+        // Find the student with the specified studentId
+        const student = await Student.findOne({ studentId });
+
+        if (!student) {
+          return res.status(404).json({ message: "Student not found" });
+        }
+
         // Calculate skip count for pagination
         const skipCount = (dataCount - 1) * 10;
 
         // Retrieve attendance records for the specified student
-        const attendanceRecords = await Attendance.find({ userId: studentId })
+        const attendanceRecords = await Attendance.find({ userId: student._id })
           .sort({ timestamp: -1 }) // Sort by descending timestamp to get the latest records first
           .skip(skipCount)
           .limit(10);
 
         const totalRecords = await Attendance.countDocuments({
-          userId: studentId,
+          userId: student._id,
         });
 
         if (attendanceRecords.length === 0) {
