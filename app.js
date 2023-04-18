@@ -14,7 +14,10 @@ app.use(cors());
 app.use(express.json());
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://hostel-manager-admin.vercel.app"
+  );
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.header(
     "Access-Control-Allow-Headers",
@@ -42,5 +45,5 @@ app.use("/api/parents", parentRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/guardian", guardianRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5100;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
