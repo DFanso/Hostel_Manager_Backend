@@ -11,9 +11,12 @@ exports.scanQR = async (req, res) => {
   const authHeader = req.headers["authorization"];
   const qrToken = req.body.qrToken;
   const secretKey = process.env.JWT_SECRET;
+  const action = req.body.buttonName;
+  const timestamp = req.body.timeStamp;
 
   if (!authHeader) {
     console.log("Error: No token provided");
+    console.log("hi");
     return res.status(401).json({ message: "No token provided" });
   }
   if (!qrToken) {
@@ -35,15 +38,14 @@ exports.scanQR = async (req, res) => {
       try {
         // Check if header token is valid
         const decodedQR = jwt.verify(qrToken, secretKey);
+        const decodedId = jwt.verify(token, secretKey);
         // Check if token is expired
         const now = new Date();
         if (now > new Date(decodedQR.expiresIn)) {
           console.log("Error: QRToken has expired");
           return res.status(401).json({ message: "QRToken has expired" });
         }
-        const userId = req.body.userId; // Extract the user ID from the decoded JWT
-        const action = req.body.action;
-        const timestamp = req.body.timestamp;
+        const userId = decodedId._id; // Extract the user ID from the decoded JWT
 
         console.log("User ID:", userId);
         console.log("Action:", action);
