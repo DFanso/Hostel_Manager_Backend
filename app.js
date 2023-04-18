@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+
 const studentRoutes = require("./routes/studentRoutes");
 const parentRoutes = require("./routes/parentRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
@@ -8,6 +10,7 @@ const guardianRoutes = require("./routes/guardianRoutes");
 const { MONGODB_URI } = require("./config/env");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.use(function (req, res, next) {
